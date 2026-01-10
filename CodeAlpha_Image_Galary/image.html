@@ -1,0 +1,741 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Gallery</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'Roboto', -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, 
+                #0a0a0a 0%, 
+                #1a1a1a 25%, 
+                #2a2a2a 50%, 
+                #1a1a1a 75%, 
+                #0a0a0a 100%);
+            color: #f0f0f0;
+            line-height: 1.6;
+            padding-bottom: 40px;
+            min-height: 100vh;
+        }
+
+        .metallic-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                linear-gradient(45deg, 
+                    rgba(255,255,255,0.02) 25%, 
+                    transparent 25%, 
+                    transparent 50%, 
+                    rgba(255,255,255,0.02) 50%, 
+                    rgba(255,255,255,0.02) 75%, 
+                    transparent 75%),
+                radial-gradient(circle at 50% 50%, 
+                    rgba(255,255,255,0.03) 0%, 
+                    transparent 50%);
+            background-size: 60px 60px, 100% 100%;
+            z-index: -1;
+            opacity: 0.3;
+        }
+
+        .container {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        .header {
+            background: linear-gradient(145deg, 
+                rgba(50,50,50,0.95) 0%, 
+                rgba(100,100,100,0.95) 100%);
+            backdrop-filter: blur(15px);
+            padding: 28px 0 25px;
+            margin-bottom: 40px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3),
+                        inset 0 1px 0 rgba(255,255,255,0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header:before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, 
+                transparent, 
+                rgba(255,255,255,0.05), 
+                transparent);
+            animation: shine 8s infinite;
+        }
+
+        @keyframes shine {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+        
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo-section {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .logo {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, 
+                #c0c0c0 0%, 
+                #a0a0a0 50%, 
+                #c0c0c0 100%);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #000;
+            font-weight: bold;
+            font-size: 24px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3),
+                        inset 0 1px 0 rgba(255,255,255,0.3),
+                        0 0 0 1px rgba(255,255,255,0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .logo:before {
+            content: '';
+            position: absolute;
+            top: -10px;
+            left: -10px;
+            right: -10px;
+            bottom: -10px;
+            background: linear-gradient(45deg, 
+                transparent 30%, 
+                rgba(255,255,255,0.2) 50%, 
+                transparent 70%);
+            transform: rotate(45deg);
+        }
+        
+        .header-text h1 {
+            font-size: 2.5rem;
+            font-weight: 300;
+            color: #fff;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+        }
+        
+        .header-text p {
+            color: #c0c0c0;
+            font-size: 1.05rem;
+            margin-top: 5px;
+            letter-spacing: 1px;
+        }
+        
+        .controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 40px;
+            padding: 20px 25px;
+            background: linear-gradient(145deg, 
+                rgba(40,40,40,0.9) 0%, 
+                rgba(60,60,60,0.9) 100%);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4),
+                        inset 0 1px 0 rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+        
+        .filter-btn {
+            padding: 12px 24px;
+            background: linear-gradient(145deg, 
+                rgba(60,60,60,0.8) 0%, 
+                rgba(80,80,80,0.8) 100%);
+            border: 1px solid rgba(255,255,255,0.1);
+            color: #c0c0c0;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 500;
+            font-size: 0.95rem;
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2),
+                        inset 0 1px 0 rgba(255,255,255,0.05);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .filter-btn:hover {
+            border-color: rgba(192,192,192,0.3);
+            color: #fff;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3),
+                        inset 0 1px 0 rgba(255,255,255,0.1);
+        }
+        
+        .filter-btn.active {
+            background: linear-gradient(135deg, 
+                #c0c0c0 0%, 
+                #a0a0a0 50%, 
+                #c0c0c0 100%);
+            border-color: rgba(192,192,192,0.5);
+            color: #000;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4),
+                        inset 0 1px 0 rgba(255,255,255,0.3);
+        }
+        
+        .gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 28px;
+            margin-bottom: 50px;
+        }
+        
+        .gallery-item {
+            border-radius: 15px;
+            overflow: hidden;
+            background: linear-gradient(145deg, 
+                rgba(30,30,30,0.9) 0%, 
+                rgba(50,50,50,0.9) 100%);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5),
+                        inset 0 1px 0 rgba(255,255,255,0.05);
+            transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+            height: 280px;
+            position: relative;
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+        
+        .gallery-item:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.7),
+                        0 0 20px rgba(192,192,192,0.1);
+            border-color: rgba(192,192,192,0.2);
+        }
+        
+        .gallery-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+            filter: contrast(1.1) brightness(0.9);
+        }
+        
+        .gallery-item:hover img {
+            transform: scale(1.08);
+            filter: contrast(1.2) brightness(1);
+        }
+        
+        .image-caption {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(to top, 
+                rgba(0, 0, 0, 0.9) 0%, 
+                transparent 100%);
+            color: #fff;
+            padding: 20px;
+            transform: translateY(100%);
+            transition: transform 0.4s ease;
+        }
+        
+        .gallery-item:hover .image-caption {
+            transform: translateY(0);
+        }
+        
+        .caption-text h3 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: #c0c0c0;
+        }
+        
+        .image-category {
+            display: inline-block;
+            padding: 4px 12px;
+            background: linear-gradient(135deg, 
+                #c0c0c0 0%, 
+                #a0a0a0 100%);
+            color: #000;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            margin-top: 8px;
+            letter-spacing: 0.5px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .lightbox {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .lightbox.active {
+            display: flex;
+            opacity: 1;
+        }
+        
+        .lightbox-content {
+            max-width: 90%;
+            max-height: 85%;
+            position: relative;
+            background: linear-gradient(145deg, 
+                rgba(30,30,30,0.95) 0%, 
+                rgba(50,50,50,0.95) 100%);
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.8),
+                        0 0 0 1px rgba(192,192,192,0.1);
+            border: 1px solid rgba(192,192,192,0.1);
+        }
+        
+        .lightbox-img {
+            width: 100%;
+            height: auto;
+            display: block;
+            max-height: 70vh;
+            object-fit: contain;
+        }
+        
+        .lightbox-caption {
+            padding: 20px 30px;
+            color: #c0c0c0;
+            font-size: 1.2rem;
+            font-weight: 500;
+            background: rgba(20,20,20,0.8);
+            border-top: 1px solid rgba(192,192,192,0.1);
+        }
+        
+        .lightbox-close {
+            position: absolute;
+            top: 20px;
+            right: 25px;
+            width: 44px;
+            height: 44px;
+            background: linear-gradient(145deg, 
+                rgba(60,60,60,0.9) 0%, 
+                rgba(80,80,80,0.9) 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #c0c0c0;
+            font-size: 1.8rem;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3),
+                        inset 0 1px 0 rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+        
+        .lightbox-close:hover {
+            background: linear-gradient(135deg, 
+                #c0c0c0 0%, 
+                #a0a0a0 100%);
+            color: #000;
+            transform: rotate(90deg);
+        }
+        
+        .lightbox-nav {
+            position: absolute;
+            top: 50%;
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            padding: 0 20px;
+            transform: translateY(-50%);
+        }
+        
+        .nav-btn {
+            width: 56px;
+            height: 56px;
+            background: linear-gradient(145deg, 
+                rgba(60,60,60,0.9) 0%, 
+                rgba(80,80,80,0.9) 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #c0c0c0;
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3),
+                        inset 0 1px 0 rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+        
+        .nav-btn:hover {
+            background: linear-gradient(135deg, 
+                #c0c0c0 0%, 
+                #a0a0a0 100%);
+            color: #000;
+            transform: scale(1.1);
+        }
+        
+        .footer {
+            text-align: center;
+            margin-top: 60px;
+            color: #888;
+            font-size: 0.9rem;
+            padding-top: 25px;
+            border-top: 1px solid rgba(255,255,255,0.05);
+        }
+        
+        .image-counter {
+            text-align: center;
+            margin-top: 20px;
+            color: #c0c0c0;
+            font-weight: 500;
+            background: linear-gradient(145deg, 
+                rgba(40,40,40,0.9) 0%, 
+                rgba(60,60,60,0.9) 100%);
+            padding: 15px 25px;
+            border-radius: 12px;
+            display: inline-block;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3),
+                        inset 0 1px 0 rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+        
+        .counter-highlight {
+            color: #c0c0c0;
+            font-weight: 700;
+            text-shadow: 0 0 10px rgba(192,192,192,0.3);
+        }
+        
+        @media (max-width: 1024px) {
+            .gallery {
+                grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+                gap: 22px;
+            }
+            
+            .header-text h1 {
+                font-size: 2rem;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .gallery {
+                grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+                gap: 18px;
+            }
+            
+            .header-content {
+                flex-direction: column;
+                gap: 20px;
+                align-items: flex-start;
+            }
+            
+            .controls {
+                justify-content: center;
+            }
+            
+            .gallery-item {
+                height: 240px;
+            }
+            
+            .nav-btn {
+                width: 48px;
+                height: 48px;
+                font-size: 1.3rem;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .gallery {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            
+            .gallery-item {
+                height: 280px;
+            }
+            
+            .controls {
+                gap: 10px;
+            }
+            
+            .filter-btn {
+                padding: 10px 18px;
+                font-size: 0.9rem;
+            }
+            
+            .header-text h1 {
+                font-size: 1.8rem;
+            }
+        }
+        
+        .fade-out {
+            opacity: 0;
+            transform: scale(0.95);
+        }
+        
+        .fade-in {
+            opacity: 1;
+            transform: scale(1);
+        }
+    </style>
+</head>
+<body>
+    <div class="metallic-bg"></div>
+    
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo-section">
+                    <div class="logo">
+                        <i class="fas fa-camera"></i>
+                    </div>
+                    <div class="header-text">
+                        <h1>Image Gallery</h1>
+                        <p>A sleek collection in silver & black</p>
+                    </div>
+                </div>
+                <div class="image-counter">
+                    Showing <span id="current-count" class="counter-highlight">0</span> of <span id="total-count" class="counter-highlight">0</span> images
+                </div>
+            </div>
+        </div>
+    </header>
+    
+    <main class="container">
+        <div class="controls">
+            <button class="filter-btn active" data-filter="all">
+                <i class="fas fa-layer-group"></i> All Images
+            </button>
+            <button class="filter-btn" data-filter="nature">
+                <i class="fas fa-mountain"></i> Nature
+            </button>
+            <button class="filter-btn" data-filter="city">
+                <i class="fas fa-city"></i> City
+            </button>
+            <button class="filter-btn" data-filter="travel">
+                <i class="fas fa-plane"></i> Travel
+            </button>
+            <button class="filter-btn" data-filter="animals">
+                <i class="fas fa-paw"></i> Animals
+            </button>
+        </div>
+        
+        <div class="gallery">
+        </div>
+    </main>
+    
+    <div class="lightbox" id="lightbox">
+        <div class="lightbox-content">
+            <span class="lightbox-close" id="lightbox-close">&times;</span>
+            <img class="lightbox-img" id="lightbox-img" src="" alt="">
+            <div class="lightbox-caption" id="lightbox-caption"></div>
+        </div>
+        
+        <div class="lightbox-nav">
+            <button class="nav-btn" id="prev-btn"><i class="fas fa-chevron-left"></i></button>
+            <button class="nav-btn" id="next-btn"><i class="fas fa-chevron-right"></i></button>
+        </div>
+    </div>
+    
+    <footer class="footer container">
+        <p>Image Gallery © 2026 | Sleek silver & black design</p>
+    </footer>
+    
+    <script>
+     
+        const images = [
+            { id: 1, src: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?auto=format&fit=crop&q=80", category: "nature", caption: "Snowy mountain peaks under clear blue sky" },
+            { id: 2, src: "https://images.unsplash.com/photo-1449824913935-59a10b8d2000?auto=format&fit=crop&q=80", category: "city", caption: "City skyline with vibrant night lights" },
+            { id: 3, src: "https://images.unsplash.com/photo-1488646953014-85cb44e25828?auto=format&fit=crop&q=80", category: "travel", caption: "Tropical paradise with crystal clear water" },
+            { id: 4, src: "https://images.unsplash.com/photo-1551963831-b3b1ca40c98e?auto=format&fit=crop&q=80", category: "animals", caption: "Colorful exotic bird in natural habitat" },
+            { id: 5, src: "https://images.unsplash.com/photo-1501854140801-50d01698950b?auto=format&fit=crop&q=80", category: "nature", caption: "Majestic mountain landscape at sunrise" },
+            { id: 6, src: "https://images.unsplash.com/photo-1514565131-fce0801e5785?auto=format&fit=crop&q=80", category: "city", caption: "Modern urban architecture and design" },
+            { id: 7, src: "https://images.unsplash.com/photo-1544551763-46a013bb70d5?auto=format&fit=crop&q=80", category: "travel", caption: "Historic European city streets" },
+            { id: 8, src: "https://images.unsplash.com/photo-1518837695005-2083093ee35b?auto=format&fit=crop&q=80", category: "animals", caption: "Powerful lion in its natural environment" },
+            { id: 9, src: "https://images.unsplash.com/photo-1426604966848-d7adac402bff?auto=format&fit=crop&q=80", category: "nature", caption: "Peaceful forest path in autumn colors" },
+            { id: 10, src: "https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?auto=format&fit=crop&q=80", category: "city", caption: "Urban landscape with bridges and rivers" },
+            { id: 11, src: "https://images.unsplash.com/photo-1469474968028-56623f02e42e?auto=format&fit=crop&q=80", category: "nature", caption: "Aerial view of winding river through hills" },
+            { id: 12, src: "https://images.unsplash.com/photo-1519046904884-53103b34b206?auto=format&fit=crop&q=80", category: "travel", caption: "Beautiful sunset over tropical beach" }
+        ];
+        
+     
+        const gallery = document.querySelector('.gallery');
+        const filterButtons = document.querySelectorAll('.filter-btn');
+        const lightbox = document.getElementById('lightbox');
+        const lightboxImg = document.getElementById('lightbox-img');
+        const lightboxCaption = document.getElementById('lightbox-caption');
+        const lightboxClose = document.getElementById('lightbox-close');
+        const prevBtn = document.getElementById('prev-btn');
+        const nextBtn = document.getElementById('next-btn');
+        const currentCount = document.getElementById('current-count');
+        const totalCount = document.getElementById('total-count');
+        
+        let currentFilter = 'all';
+        let currentImageIndex = 0;
+        let filteredImages = [];
+        
+     
+        function initGallery() {
+            renderGallery();
+            updateImageCount();
+            
+     
+            filterButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    const filter = button.getAttribute('data-filter');
+                    setActiveFilter(button, filter);
+                });
+            });
+            
+            lightboxClose.addEventListener('click', closeLightbox);
+            prevBtn.addEventListener('click', showPrevImage);
+            nextBtn.addEventListener('click', showNextImage);
+            
+        
+            lightbox.addEventListener('click', (e) => {
+                if (e.target === lightbox) {
+                    closeLightbox();
+                }
+            });
+            
+         
+            document.addEventListener('keydown', (e) => {
+                if (lightbox.classList.contains('active')) {
+                    if (e.key === 'Escape') closeLightbox();
+                    if (e.key === 'ArrowLeft') showPrevImage();
+                    if (e.key === 'ArrowRight') showNextImage();
+                }
+            });
+        }
+        
+     
+        function renderGallery() {
+            gallery.innerHTML = '';
+            
+      
+            filteredImages = currentFilter === 'all' 
+                ? images 
+                : images.filter(img => img.category === currentFilter);
+            
+         
+            filteredImages.forEach((image, index) => {
+                const galleryItem = document.createElement('div');
+                galleryItem.className = 'gallery-item fade-in';
+                galleryItem.setAttribute('data-category', image.category);
+                
+                galleryItem.innerHTML = `
+                    <img src="${image.src}" alt="${image.caption}" loading="lazy">
+                    <div class="image-caption">
+                        <div class="caption-text">
+                            <h3>Image #${image.id}</h3>
+                            <p>${image.caption}</p>
+                            <span class="image-category">${image.category}</span>
+                        </div>
+                    </div>
+                `;
+                
+              
+                galleryItem.addEventListener('click', () => openLightbox(index));
+                
+                gallery.appendChild(galleryItem);
+            });
+            
+            updateImageCount();
+        }
+        
+       
+        function setActiveFilter(clickedButton, filter) {
+           
+            filterButtons.forEach(btn => btn.classList.remove('active'));
+            clickedButton.classList.add('active');
+            
+            
+            const galleryItems = document.querySelectorAll('.gallery-item');
+            galleryItems.forEach(item => {
+                item.classList.remove('fade-in');
+                item.classList.add('fade-out');
+            });
+            
+           
+            setTimeout(() => {
+                currentFilter = filter;
+                renderGallery();
+            }, 300);
+        }
+        
+       
+        function openLightbox(index) {
+            currentImageIndex = index;
+            updateLightbox();
+            lightbox.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+        
+       
+        function closeLightbox() {
+            lightbox.classList.remove('active');
+            document.body.style.overflow = 'auto';
+        }
+        
+     
+        function showPrevImage() {
+            currentImageIndex = (currentImageIndex - 1 + filteredImages.length) % filteredImages.length;
+            updateLightbox();
+        }
+        
+    
+        function showNextImage() {
+            currentImageIndex = (currentImageIndex + 1) % filteredImages.length;
+            updateLightbox();
+        }
+        
+    
+        function updateLightbox() {
+            const image = filteredImages[currentImageIndex];
+            lightboxImg.src = image.src;
+            lightboxImg.alt = image.caption;
+            lightboxCaption.textContent = `${image.caption} (${currentImageIndex + 1}/${filteredImages.length})`;
+        }
+        
+    
+        function updateImageCount() {
+            currentCount.textContent = filteredImages.length;
+            totalCount.textContent = images.length;
+        }
+        
+    
+        document.addEventListener('DOMContentLoaded', initGallery);
+    </script>
+</body>
+</html>
